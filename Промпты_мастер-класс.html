@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Промпты «Капитализация экспертности»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: одна узкая колонка под телефон; навигация по промптам — липкая полоса сверху */
+:root{
+  --bg:#FAF7F5; --surface:#FFFFFF; --sunk:#F1ECE9; --fg:#1B1A1C; --muted:#6B666A; --line:#E6DFDB;
+  --accent:#D9212C; --accent-fg:#FFFFFF; --warn-bg:#FBE9EA;
+  --f-display:"Golos Text", Arial, sans-serif; --f-body:"Golos Text", Arial, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141314; --surface:#1E1C1E; --sunk:#262326; --fg:#F2EEEC; --muted:#A8A1A5; --line:#332F32;
+  --accent:#F0444E; --accent-fg:#FFFFFF; --warn-bg:#3A1C1F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#141314; --surface:#1E1C1E; --sunk:#262326; --fg:#F2EEEC; --muted:#A8A1A5; --line:#332F32;
+  --accent:#F0444E; --accent-fg:#FFFFFF; --warn-bg:#3A1C1F; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--fg); font-family:var(--f-body); font-size:16px; line-height:1.5}
+.wrap{max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); padding-block:28px 48px; display:flex; flex-direction:column; gap:20px}
+.eyebrow{margin:0; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+h1{margin:4px 0 0; font-family:var(--f-display); font-weight:700; font-size:clamp(28px,6vw,40px); line-height:1.1; text-wrap:balance}
+.lead{margin:0; color:var(--muted); max-width:60ch}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--bg)}
+nav{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding-block:10px; display:flex; gap:8px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid var(--line)}
+nav a{flex:0 0 auto; text-align:center; text-decoration:none; color:var(--fg); background:var(--sunk); border-radius:10px; padding:8px 12px; font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+nav a:focus-visible, .copy:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+nav a.on{background:var(--accent); color:var(--accent-fg)}
+.conf{background:var(--warn-bg); border-radius:12px; padding:14px 16px; font-size:14.5px}
+.conf b{display:block; margin-bottom:4px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:14px; scroll-margin-top:calc(env(safe-area-inset-top,0px) + 72px); min-width:0}
+.card-head{display:flex; gap:14px; align-items:center}
+.num{flex:none; width:48px; height:48px; border-radius:12px; background:var(--accent); color:var(--accent-fg); display:grid; place-items:center; font-weight:700; font-size:24px; font-variant-numeric:tabular-nums}
+.head-text{min-width:0}
+.when{margin:0; font-size:12.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+h2{margin:2px 0 0; font-size:21px; line-height:1.2; text-wrap:balance}
+.hint{margin:0; color:var(--muted); font-size:15px}
+.prompt{margin:0; background:var(--sunk); border-radius:12px; padding:16px; font-family:var(--f-body); font-size:14.5px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; max-height:340px; overflow:auto}
+.copy{appearance:none; border:0; border-radius:12px; background:var(--fg); color:var(--bg); font:600 16px/1 var(--f-body); padding:16px; cursor:pointer; width:100%}
+.copy.done{background:var(--accent); color:var(--accent-fg)}
+.group{margin:12px 0 -6px; font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.foot{color:var(--muted); font-size:13.5px; margin:0}
+@media (prefers-reduced-motion: no-preference){ html{scroll-behavior:smooth} .copy{transition:background .2s} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <p class="eyebrow">Мастер-класс · Форум «Закупки в бизнесе» · 13.11.2026</p>
+    <h1>Капитализация экспертности: промпты</h1>
+  </div>
+  <p class="lead">Все промпты вставляйте в один диалог с ИИ по порядку. Между ними рассказывайте совету о себе своими словами — можно загрузить резюме, должностную инструкцию, отчёт с результатами.</p>
+  <nav aria-label="Промпты">
+    <a href="#p0" data-id="p0">0 · Совет</a>
+    <a href="#p1" data-id="p1">1 · Контекст</a>
+    <a href="#p2" data-id="p2">2 · Одна фраза</a>
+    <a href="#p3" data-id="p3">3 · Навыки</a>
+    <a href="#p4" data-id="p4">4 · Результаты</a>
+    <a href="#p5" data-id="p5">5 · Позиция</a>
+    <a href="#p6" data-id="p6">6 · Глазами ГД</a>
+  </nav>
+  <div class="conf"><b>Конфиденциальность</b>Не вводите в нейросеть коммерческую тайну: названия контрагентов, цены, условия договоров, персональные данные. Обобщайте: «крупный поставщик металлопроката», «экономия порядка 10%», «бюджет категории — сотни миллионов рублей».</div>
+  <h3 class="group">По ходу мастер-класса</h3>
+<section class="card" id="p0">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">0</span>
+    <div class="head-text">
+      <p class="when">Промпт 0 · В начале</p>
+      <h2>Персональный совет директоров</h2>
+    </div>
+  </header>
+  <p class="hint">Откройте новый чат с ИИ и вставьте промпт. Совет подтвердит состав и дальше будет только принимать информацию о вас.</p>
+  <pre class="prompt" id="t-p0">Ты — мой персональный совет директоров. Цель: собрать мой профайл эксперта в закупках и ответить, за что компания будет мне платить.
+Состав:
+— Председатель, независимый директор: ведёт заседание и фиксирует решения.
+— HRD: в какой роли я работаю и кто меня слышит.
+— CFO: в чём эффект (деньги, риск, скорость) и кто его подтвердил.
+— Директор по закупкам: каким инструментом достигнуто и что из этого уже делает ИИ.
+— Операционный директор: что изменилось для производства.
+Режим слушания: пока я не дам новую вводную, только принимай информацию обо мне и подтверждай её получение — без комментариев и вопросов.
+Правила работы после новой вводной: на каждый мой ответ говорят до трёх профильных членов совета, по одной реплике, затем строка «Решение совета». Ничего не придумывай, используй только мои данные.
+
+Подтверди состав и жди информацию.
+
+В ближайшее время я буду сообщать о себе. Принимай информацию. Не обсуждай, не задавай вопросы. Жди указания на дальнейшие действия. 
+
+Обо мне: … (должность, стаж, категории, отрасль — или вставляю резюме, должностную инструкцию, отчёт с результатами; названия компаний, ФИО, контрагенты и точные суммы убраны).</pre>
+  <button class="copy" type="button" id="b-p0" data-target="t-p0">Скопировать промпт 0</button>
+</section>
+<section class="card" id="p1">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">1</span>
+    <div class="head-text">
+      <p class="when">Промпт 1 · По ходу</p>
+      <h2>Уровень управления и контекст компаний</h2>
+    </div>
+  </header>
+  <p class="hint">В тот же диалог. Заполните строку «По каждой компании» — без названий компаний.</p>
+  <pre class="prompt" id="t-p1">Совет, примите информацию о компаниях, где я работал: уровень управления и текущий контекст. Используйте эти определения.
+
+Уровни управления:
+1. Героизм — результат без писаных правил, «всё держится на людях». Решения принимаются лично первым лицом, в ручном режиме. ГД спрашивает: «Когда привезёте?»
+2. Регламент — правила превыше результата, «главное — не нарушить». Решения — по процедуре, через цепочку согласований. ГД спрашивает: «Всё по процедуре?»
+3. Выжать всё — результат превыше правил на короткой дистанции, «цифра любой ценой». Решения — по KPI и цифрам квартала. ГД спрашивает: «Сколько сэкономили?»
+4. Устойчивость — компромисс результата и правил на длинной дистанции, «выиграть длинную игру». Решения — по стратегии и сценариям рисков. ГД спрашивает: «Каковы риски? Какие есть точки роста?»
+
+Контекст — что происходит с компанией сейчас: рост (приоритет — скорость); кризис, падение маржи (затраты); санкции, разрывы цепочек (устойчивость); смена собственника, аудиторский скандал (прозрачность).
+
+По каждой компании: […без названия…] — уровень: […], контекст: […].
+
+Примите информацию и подтвердите получение. Без комментариев — до новой вводной.</pre>
+  <button class="copy" type="button" id="b-p1" data-target="t-p1">Скопировать промпт 1</button>
+</section>
+<section class="card" id="p2">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">2</span>
+    <div class="head-text">
+      <p class="when">Промпт 2 · По ходу · практика</p>
+      <h2>Одна фраза</h2>
+    </div>
+  </header>
+  <p class="hint">В тот же диалог с советом: этот разговор ведёт HRD. Заполните три строки в конце промпта.</p>
+  <pre class="prompt" id="t-p2">Совет, новая вводная: диалог со мной ведёт HRD, остальные члены совета пока молчат.
+HRD, помоги мне описать свою работу через результат, а не через процесс.
+
+Задавай мне по одному вопросу за раз: «А в итоге что изменилось?», «В каких цифрах?», «Кто это подтвердит?» — пока не получится фраза по формуле: глагол совершенного вида + объект и масштаб + эффект в метрике уровня + кто подтвердил.
+Если я не могу назвать эффект, ориентируйся на измеримые результаты закупок по CIPS: прямая экономия (hard savings), предотвращённый рост затрат (cost avoidance), эффективность процесса (process efficiency), а также снятый риск, сроки, качество.
+
+Показатели CIPS: снижение затрат (cost reduction), предотвращённый рост затрат (cost avoidance), доля затрат под управлением закупок (spend under management), окупаемость закупок (procurement ROI), поставка вовремя и в полном объёме (OTIF), срок поставки поставщиком (supplier lead time), эффективность размещения заказов (ordering efficiency), количество размещённых заказов (orders raised), отклонения от плана (variance factors).
+
+Не придумывай цифры за меня.
+Итоговую фразу сформулируй на языке уровня моей компании: Героизм — скорость и спасённая ситуация; Регламент — соблюдённая процедура и отсутствие замечаний; Выжать всё — экономия в деньгах; Устойчивость — снижение рисков, их цена и точки роста.
+Затем покажи, как та же фраза звучала бы на языке следующего уровня.
+Коммерческую тайну я не называю — работай с порядками величин.
+Когда фраза готова, совет возвращается в режим слушания.
+
+Моя роль: [...]
+Уровень управления в моей компании: [Героизм / Регламент / Выжать всё / Устойчивость]
+Вот как я сейчас описываю то, что делаю: [например, «провожу тендеры по запчастям»]</pre>
+  <button class="copy" type="button" id="b-p2" data-target="t-p2">Скопировать промпт 2</button>
+</section><h3 class="group">Сборка профайла в конце</h3>
+<section class="card" id="p3">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">3</span>
+    <div class="head-text">
+      <p class="when">Промпт 3 · Сборка профайла</p>
+      <h2>Навыки</h2>
+    </div>
+  </header>
+  <p class="hint">В тот же диалог. Совет переходит от слушания к работе над профайлом.</p>
+  <pre class="prompt" id="t-p3">Совет, новая вводная: собираем мой профайл. Опирайтесь на всё, что я присылал. Начинаем с блока «Навыки».
+
+1. Составь перечень профессиональных навыков для моей роли и области, разделив их на обязательные и желательные. Сгруппируй их по трём зонам закупок: разработка стратегии; взаимоотношения с поставщиками; операционные процессы.
+2. Учти, как ИИ меняет роль на трёх уровнях:
+   личная эффективность: ИИ может взять на себя обзоры рынка, анализ ТЗ, сравнение КП, письма, переводы, проверка контрагентов и т.д.;
+   операционная эффективность — роботы и ИИ-агенты ведут тендеры и учёт, мониторинг цен, скоринг поставщиков, прогноз потребности;
+   системная эффективность — сквозные процессы, где цифровой и человеческий труд встроены друг в друга; ИИ анализирует данные, строит сценарии и пишет код для роботов, но архитектор процесса — человек.
+Учитывай уровень зрелости компании и контекст. 
+   Для каждого навыка укажи, что в нём берёт на себя ИИ, а что остаётся за экспертом. Добавь навыки работы с ИИ, которые становятся важными для моей роли, , в том числе в части построения процессов и систем, где ИИ интегрируется в работу.
+3. Спроси меня, какие из этих навыков я считаю своими сильными сторонами, а какие — зоной роста.
+На выходе дай таблицу: зона | навык | обязательный или желательный | что берёт ИИ | что остаётся за экспертом | моя самооценка (сильная сторона / есть / зона роста).
+По результатам работы мы должны сформировать перечень моих навыков, на которых базируется моя экспертность. 
+
+Подтверждения экспертности соберём в следующем блоке.</pre>
+  <button class="copy" type="button" id="b-p3" data-target="t-p3">Скопировать промпт 3</button>
+</section>
+<section class="card" id="p4">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">4</span>
+    <div class="head-text">
+      <p class="when">Промпт 4 · Сборка профайла</p>
+      <h2>Результаты</h2>
+    </div>
+  </header>
+  <p class="hint">В тот же диалог, после таблицы навыков.</p>
+  <pre class="prompt" id="t-p4">Переходим к блоку «Результаты». Возьмите результаты, которые я присылал по ходу, и уровень управления и контекст компаний, где я работал.
+
+1. Проверьте, действительно ли каждый результат строится на навыках из таблицы: какие навыки он подтверждает.
+2. Сформулируйте каждый результат по формуле: глагол совершенного вида + объект и масштаб + эффект в метрике уровня моей компании + кто подтвердил. Не придумывайте цифры: если данных не хватает — спросите.
+
+На выходе дай:
+- 5–7 ключевых результатов по формуле, у каждого — какие навыки он подтверждает;
+- обновлённую таблицу навыков с колонками «подтверждён / частично / нет подтверждения» и «чем подтверждён»;
+- отдельным списком — обязательные навыки без подтверждения: это зона развития.</pre>
+  <button class="copy" type="button" id="b-p4" data-target="t-p4">Скопировать промпт 4</button>
+</section>
+<section class="card" id="p5">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">5</span>
+    <div class="head-text">
+      <p class="when">Промпт 5 · Сборка профайла</p>
+      <h2>Позиция</h2>
+    </div>
+  </header>
+  <p class="hint">В тот же диалог.</p>
+  <pre class="prompt" id="t-p5">Сформулируй мою экспертную позицию в одном предложении: специализация, рынок или категория, чем доказано. Опирайся только на то, что я уже рассказал. Дай два варианта.</pre>
+  <button class="copy" type="button" id="b-p5" data-target="t-p5">Скопировать промпт 5</button>
+</section>
+<section class="card" id="p6">
+  <header class="card-head">
+    <span class="num" aria-hidden="true">6</span>
+    <div class="head-text">
+      <p class="when">Промпт 6 · Сборка профайла</p>
+      <h2>Сборка и проверка глазами ГД</h2>
+    </div>
+  </header>
+  <p class="hint">В тот же диалог. Финальный шаг.</p>
+  <pre class="prompt" id="t-p6">Собери мой профайл: 1) экспертная позиция, 2) навыки, 3) результаты.
+Затем на совет пригласи генерального директора моей компании. Пусть он прочитает профайл и ответит: за что он готов мне платить и чего ему не хватает. Три строки, не больше.</pre>
+  <button class="copy" type="button" id="b-p6" data-target="t-p6">Скопировать промпт 6</button>
+</section>
+  <p class="foot">Мария Коваленко · mk@dbsol.ru</p>
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click',function(){
+    var el=document.getElementById(b.dataset.target), label=b.textContent;
+    function ok(){ b.textContent='Скопировано — вставьте в чат'; b.classList.add('done'); setTimeout(function(){b.textContent=label;b.classList.remove('done')},2500) }
+    function sel(){ var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent='Текст выделен — скопируйте вручную' }
+    try{ navigator.clipboard.writeText(el.textContent).then(ok,sel) }catch(e){ sel() }
+  });
+});
+function mark(){ var h=(location.hash||'').slice(1); document.querySelectorAll('nav a').forEach(function(a){a.classList.toggle('on',a.dataset.id===h)}); var t=h&&document.getElementById(h); if(t) t.scrollIntoView(); }
+window.addEventListener('hashchange',mark); mark();
+</script>
+
+</body>
+</html>
